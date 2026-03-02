@@ -1,0 +1,360 @@
+
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1200">
+    <title>Pernikahan Aziz & Shonia</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <style>
+        body { font-family: 'Montserrat', sans-serif; background-color: #fff5f5; color: #4a4a4a; overflow-x: hidden; }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .font-signature { font-family: 'Great Vibes', cursive; }
+        .bg-blush { background-color: #fce4ec; }
+        .text-blush { color: #d81b60; }
+        .hero-gradient { background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7)); }
+        [x-cloak] { display: none !important; }
+        
+        .bg-local-hero { background-image: url('hero-bg.jpg'); background-size: cover; background-position: center; }
+        .bg-local-parents {
+            background-image: linear-gradient(rgba(255, 245, 245, 0.85), rgba(255, 245, 245, 0.85)), 
+                              url('parents-bg.jpg');
+            background-size: cover; background-position: center; background-attachment: fixed;
+        }
+        .aspect-portrait { aspect-ratio: 3 / 4; }
+
+        .sakura {
+            position: fixed;
+            top: -10%;
+            z-index: 9999;
+            pointer-events: none;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(360deg); }
+        }
+
+        /* --- ORNAMENT STYLES --- */
+        .ornament-frame {
+            position: relative;
+        }
+        .ornament-frame::before, .ornament-frame::after {
+            content: "✿";
+            position: absolute;
+            font-size: 20px;
+            color: rgba(244, 143, 177, 0.6);
+            line-height: 1;
+            z-index: 10;
+        }
+        .ornament-frame::before { top: 10px; left: 10px; }
+        .ornament-frame::after { bottom: 10px; right: 10px; }
+
+        .divider-ornament {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        .divider-ornament::before, .divider-ornament::after {
+            content: "";
+            height: 1px;
+            width: 60px;
+            background: linear-gradient(to right, transparent, #f48fb1, transparent);
+            margin: 0 15px;
+        }
+        
+        .corner-decor {
+            position: relative;
+        }
+        .corner-decor::before {
+            content: "❁";
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 40px;
+            opacity: 0.1;
+            color: #d81b60;
+        }
+    </style>
+</head>
+<body x-data="weddingApp()" x-init="init()" :class="isOpen ? '' : 'overflow-hidden'">
+
+    <div x-show="lightbox" x-transition x-cloak class="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4" @click="lightbox = false">
+        <img :src="activeImg" class="max-w-full max-h-full rounded-lg shadow-2xl">
+        <button class="absolute top-6 right-6 text-white text-3xl">&times;</button>
+    </div>
+
+    <audio id="weddingMusic" loop preload="auto">
+        <source src="wedding-song.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="fixed bottom-6 right-6 z-50" x-show="showMusicBtn" x-transition>
+        <button @click="toggleMusic()" class="bg-white p-4 rounded-full shadow-2xl border border-pink-200 transition-transform active:scale-90">
+            <template x-if="!isPlaying">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                </svg>
+            </template>
+            <template x-if="isPlaying">
+                <div class="h-6 w-6 flex items-baseline justify-center space-x-1">
+                    <div class="w-1 bg-pink-500 animate-[bounce_1s_infinite]"></div>
+                    <div class="w-1 bg-pink-500 animate-[bounce_0.7s_infinite]"></div>
+                    <div class="w-1 bg-pink-500 animate-[bounce_1.2s_infinite]"></div>
+                </div>
+            </template>
+        </button>
+    </div>
+
+    <section class="relative h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 bg-local-hero"></div>
+        <div class="absolute inset-0 hero-gradient"></div>
+        <div class="relative text-center text-white px-4 flex flex-col items-center" data-aos="fade-up" data-aos-duration="2000">
+            <h4 class="uppercase tracking-[0.4em] text-xs md:text-sm mb-4 opacity-80">The Wedding Of</h4>
+            <h1 class="font-signature text-7xl md:text-9xl mb-8 text-pink-100">Aziz & Shonia</h1>
+            
+            <div class="mb-10 bg-black/40 backdrop-blur-md p-6 md:p-8 rounded-2xl border border-white/20 shadow-2xl max-w-sm w-full transform hover:scale-105 transition-transform duration-500 ornament-frame" x-cloak>
+                <p class="text-xs font-light mb-3 italic text-pink-200">Kepada Bapak/Ibu/Saudara/i:</p>
+                <div class="border-y border-white/20 py-4 mb-4">
+                    <h2 class="text-2xl md:text-3xl font-serif font-bold italic text-white" x-text="guestName"></h2>
+                </div>
+                <p class="text-[10px] md:text-xs font-light italic text-gray-300">Kami mengundang Anda untuk hadir di hari bahagia kami</p>
+            </div>
+
+            <p class="text-lg md:text-xl font-light tracking-widest mb-10 border-b border-pink-400/50 pb-2">12 . 04 . 2026</p>
+            
+            <div class="mt-2">
+                <a href="#verse" @click="startEverything()" class="group relative inline-flex items-center justify-center px-10 py-4 font-semibold transition-all duration-200 bg-white text-pink-600 rounded-full hover:bg-pink-500 hover:text-white shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                    <span class="mr-2">Buka Undangan</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="verse" class="py-20 px-6 text-center max-w-4xl mx-auto corner-decor" data-aos="fade-up">
+        <div class="mb-8">
+            <div class="divider-ornament text-pink-300 mb-6">
+                <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C19.5693 16 20.017 15.5523 20.017 15V9C20.017 8.44772 19.5693 8 19.017 8H16.017C14.9124 8 14.017 7.10457 14.017 6V5C14.017 3.89543 14.9124 3 16.017 3H19.017C21.2261 3 23.017 4.79086 23.017 7V15C23.017 18.866 19.883 22 16.017 22H14.017V21ZM1.017 21L1.017 18C1.017 16.8954 1.91243 16 3.017 16H6.017C6.56928 16 7.017 15.5523 7.017 15V9C7.017 8.44772 6.56928 8 6.017 8H3.017C1.91243 8 1.017 7.10457 1.017 6V5C1.017 3.89543 1.91243 3 3.017 3H6.017C8.22614 3 10.017 4.79086 10.017 7V15C10.017 18.866 6.883 22 3.017 22H1.017V21Z" />
+                </svg>
+            </div>
+            <p class="text-gray-700 leading-relaxed font-serif text-lg md:text-xl italic">
+                "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang. Sesungguhnya pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir."
+            </p>
+            <div class="divider-ornament text-pink-400 mt-6">━━━━━ ❁ ━━━━━</div>
+            <p class="mt-4 font-bold text-pink-600 tracking-widest">— Surah Ar-Rum ayat 21</p>
+        </div>
+    </section>
+
+    <section id="opening" class="py-10 px-6 text-center max-w-3xl mx-auto" data-aos="fade-up">
+        <p class="text-gray-600 leading-relaxed italic text-sm md:text-base">
+            "Assalamu'alaikum Warahmatullahi Wabarakatuh. Dengan memohon rahmat dan ridho Allah SWT, kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada pernikahan kami"
+        </p>
+    </section>
+
+    <section class="py-24 px-4 bg-local-parents">
+        <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 text-center">
+            <div class="bg-white/75 backdrop-blur-md p-10 rounded-2xl border border-white shadow-lg ornament-frame" data-aos="fade-right">
+                <h2 class="font-signature text-4xl text-blush mb-4">Aziz Maulana, S.T.</h2>
+                <p class="text-xs text-gray-500 mb-2 font-semibold uppercase tracking-widest">Putra Dari:</p>
+                <p class="text-gray-800 font-bold">Bpk. Syaiful Muchtar</p>
+                <p class="text-gray-400 font-serif my-1">&</p>
+                <p class="text-gray-800 italic">Ibu Rusmawati (Almh)</p>
+            </div>
+            <div class="bg-white/75 backdrop-blur-md p-10 rounded-2xl border border-white shadow-lg ornament-frame" data-aos="fade-left">
+                <h2 class="font-signature text-4xl text-blush mb-4">Cut Shonia Dwi Permata</h2>
+                <p class="text-xs text-gray-500 mb-2 font-semibold uppercase tracking-widest">Putri Dari:</p>
+                <p class="text-gray-800 font-bold">Bpk. Sahril</p>
+                <p class="text-gray-400 font-serif my-1">&</p>
+                <p class="text-gray-800 font-bold">Ibu Sartini</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 px-4 bg-pink-50/30 text-center">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="font-serif text-3xl mb-6 text-pink-700" data-aos="fade-up">Informasi Acara</h2>
+            
+            <div class="flex justify-center gap-3 mb-12" x-data="countdownTimer('2026-04-12T10:00:00')" x-init="init()" data-aos="fade-up">
+                <div class="bg-white border border-pink-100 rounded-xl p-3 min-w-[70px] shadow-sm">
+                    <span class="block text-2xl font-bold text-pink-600" x-text="days">00</span>
+                    <span class="text-[10px] uppercase font-bold text-gray-400">Hari</span>
+                </div>
+                <div class="bg-white border border-pink-100 rounded-xl p-3 min-w-[70px] shadow-sm">
+                    <span class="block text-2xl font-bold text-pink-600" x-text="hours">00</span>
+                    <span class="text-[10px] uppercase font-bold text-gray-400">Jam</span>
+                </div>
+                <div class="bg-white border border-pink-100 rounded-xl p-3 min-w-[70px] shadow-sm">
+                    <span class="block text-2xl font-bold text-pink-600" x-text="minutes">00</span>
+                    <span class="text-[10px] uppercase font-bold text-gray-400">Menit</span>
+                </div>
+                <div class="bg-white border border-pink-100 rounded-xl p-3 min-w-[70px] shadow-sm">
+                    <span class="block text-2xl font-bold text-pink-600" x-text="seconds">00</span>
+                    <span class="text-[10px] uppercase font-bold text-gray-400">Detik</span>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-2xl shadow-xl border-t-8 border-pink-400 text-center ornament-frame" data-aos="zoom-in-up">
+                    <h3 class="font-serif text-4xl mb-6 text-gray-700">Akad Nikah</h3>
+                    <p class="font-bold text-2xl text-gray-800">10:00 WIB</p>
+                    <p class="text-gray-500 italic mb-4">Minggu, 12 April 2026</p>
+                    <p class="font-bold">Desa Benakat Minyak</p>
+                    <p class="text-gray-500 text-sm">Dusun 1 Tangsi, Pali</p>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-xl border-t-8 border-pink-400 text-center ornament-frame" data-aos="zoom-in-up" data-aos-delay="200">
+                    <h3 class="font-serif text-4xl mb-6 text-gray-700">Syukuran</h3>
+                    <p class="font-bold text-2xl text-gray-800">11:00 WIB - Selesai</p>
+                    <p class="text-gray-500 italic mb-4">Minggu, 12 April 2026</p>
+                    <p class="font-bold">Desa Benakat Minyak</p>
+                    <p class="text-gray-500 text-sm">Dusun 1 Tangsi, Pali</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 bg-white/60 relative overflow-hidden">
+        <div class="max-w-3xl mx-auto px-6 relative z-10 text-center">
+            <h2 class="font-signature text-5xl text-pink-600 mb-10" data-aos="fade-down">Our Love Story</h2>
+            
+            <div class="space-y-8 text-gray-700 leading-relaxed text-sm md:text-base" data-aos="fade-up">
+                <div class="p-8 bg-white/80 backdrop-blur-sm rounded-3xl shadow-sm border border-pink-100">
+                    <p class="italic">Perjalanan cinta kami dimulai pada tahun 2020. Saat itu kami tidak ada yang menyangka pertemuan singkat itu menjadi awal cerita panjang yang penuh warna. Setelah beberapa bulan berteman, kami mulai saling membuka hati. Komunikasi yang tulus dan perhatian sederhana menjadi dasar hubungan kami.</p>
+                </div>
+                <div class="p-8 bg-white/80 backdrop-blur-sm rounded-3xl shadow-sm border border-pink-100">
+                    <p class="italic">Tahun demi tahun, kami belajar tumbuh bersama, belajar memahami perbedaan, mendukung mimpi masing-masing, dan menjaga rasa percaya. Pada 2025 ia mengutarakan niat serius untuk melangkah ke jenjang pernikahan.</p>
+                </div>
+                <div class="p-8 bg-pink-50/50 rounded-3xl shadow-sm border border-pink-200 font-medium">
+                    <p>Kini, dengan penuh bahagia, kami siap merayakan janji suci dan memulai bab baru sebagai pasangan suami istri. Kami bersyukur jika kehadiran Anda bisa menjadi bagian dari momen berharga ini.</p>
+                </div>
+            </div>
+        </div>
+        <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-pink-100 rounded-full blur-3xl opacity-50"></div>
+        <div class="absolute -top-10 -right-10 w-40 h-40 bg-pink-100 rounded-full blur-3xl opacity-50"></div>
+    </section>
+
+    <section class="py-20 bg-white">
+        <div class="max-w-5xl mx-auto px-4">
+            <h2 class="font-signature text-5xl text-center text-pink-600 mb-12" data-aos="fade-up">Our Moments</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <template x-for="i in [1,2,3,4,5,6]">
+                    <div class="overflow-hidden rounded-xl shadow-md cursor-pointer group" 
+                         data-aos="zoom-in" 
+                         @click="activeImg = `gallery-${i}.jpg`; lightbox = true">
+                        <img :src="`gallery-${i}.jpg`" 
+                             class="w-full h-full object-cover aspect-portrait transition duration-500 group-hover:scale-110"
+                             alt="Moment Photo">
+                    </div>
+                </template>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 bg-stone-50 text-center">
+        <div class="max-w-4xl mx-auto px-4">
+            <h2 class="font-serif text-3xl mb-8 text-pink-700">Lokasi Acara</h2>
+            <div class="rounded-2xl overflow-hidden shadow-2xl mb-8 border-4 border-white" data-aos="fade-up">
+                <img src="map-location.jpg" alt="Peta Lokasi" class="w-full h-auto min-h-[300px] object-cover">
+            </div>
+            <a href="https://goo.gl/maps/2CiZNbHHLvxMzKT39" target="_blank" class="inline-block bg-pink-500 text-white px-10 py-4 rounded-full hover:bg-pink-600 transition shadow-lg transform hover:scale-105 active:scale-95">
+               Lihat di Google Maps
+            </a>
+        </div>
+    </section>
+
+    <section class="py-20 px-6 text-center max-w-3xl mx-auto" data-aos="fade-up">
+        <div class="divider-ornament text-pink-300 mb-8">━━━━━ ❀ ━━━━━</div>
+        <p class="text-gray-700 leading-relaxed font-serif text-lg italic mb-8">
+            "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan doa restu kepada kami."
+        </p>
+        <p class="text-gray-800 font-semibold tracking-wide">
+            Wassalamu'alaikum Warahmatullahi Wabarakatuh
+        </p>
+    </section>
+
+    <footer class="py-12 bg-pink-50 text-center">
+        <h2 class="font-signature text-3xl text-blush">Aziz & Shonia</h2>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ once: true, duration: 1000 });
+
+        function weddingApp() {
+            return {
+                isPlaying: false,
+                showMusicBtn: false,
+                isOpen: false,
+                guestName: 'Tamu Undangan',
+                lightbox: false,
+                activeImg: '',
+                init() {
+                    this.getGuestName();
+                },
+                getGuestName() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const to = urlParams.get('to');
+                    if (to) this.guestName = decodeURIComponent(to.replace(/\+/g, ' '));
+                },
+                startEverything() {
+                    this.isOpen = true;
+                    const audio = document.getElementById('weddingMusic');
+                    audio.play().catch(e => console.log("Audio play blocked"));
+                    this.isPlaying = true;
+                    this.showMusicBtn = true;
+                    this.startSakura();
+                },
+                toggleMusic() {
+                    const audio = document.getElementById('weddingMusic');
+                    if (this.isPlaying) {
+                        audio.pause();
+                    } else {
+                        audio.play();
+                    }
+                    this.isPlaying = !this.isPlaying;
+                },
+                startSakura() {
+                    setInterval(() => {
+                        const leaf = document.createElement('div');
+                        leaf.classList.add('sakura');
+                        leaf.innerHTML = '🌸';
+                        leaf.style.left = Math.random() * 100 + 'vw';
+                        leaf.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                        leaf.style.opacity = Math.random();
+                        leaf.style.fontSize = (Math.random() * 10 + 10) + 'px';
+                        document.body.appendChild(leaf);
+                        
+                        setTimeout(() => { leaf.remove(); }, 5000);
+                    }, 300);
+                }
+            }
+        }
+
+        function countdownTimer(targetDate) {
+            return {
+                days: '00', hours: '00', minutes: '00', seconds: '00',
+                init() {
+                    const target = new Date(targetDate).getTime();
+                    setInterval(() => {
+                        const now = new Date().getTime();
+                        const distance = target - now;
+                        if (distance < 0) return;
+                        this.days = Math.floor(distance / (1000 * 60 * 60 * 24)).toString().padStart(2, '0');
+                        this.hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+                        this.minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+                        this.seconds = Math.floor((distance % (1000 * 60)) / 1000).toString().padStart(2, '0');
+                    }, 1000);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
